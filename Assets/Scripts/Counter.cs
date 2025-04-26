@@ -1,26 +1,28 @@
 using System;
 using System.Collections;
-using TMPro;
 using UnityEngine;
 
 public class Counter : MonoBehaviour
 {
-    public event Action<float> TimeChanged;
-
-    private int _beginningReport = 0;
+    private Coroutine _coroutine;
     private bool _isActive = true;
+    private int _StartTime = 0;   
+
+    public event Action<float> TimeChanged;
 
     private void OnMouseDown()
     {
         if (_isActive)
         {
             _isActive = false;
-            StopCoroutine(CountDown());
+            
+            if (_coroutine != null)
+                StopCoroutine(_coroutine);
         }
         else
         {
             _isActive = true;
-            StartCoroutine(CountDown());
+            _coroutine = StartCoroutine(CountDown());
         }          
     }
 
@@ -30,8 +32,8 @@ public class Counter : MonoBehaviour
 
         while (_isActive)
         {
-            _beginningReport++;
-            TimeChanged?.Invoke(_beginningReport);
+            _StartTime++;
+            TimeChanged?.Invoke(_StartTime);           
             yield return wait;
         }    
     }
