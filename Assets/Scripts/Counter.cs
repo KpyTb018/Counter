@@ -1,37 +1,38 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
 
 public class Counter : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI _text;
+    public event Action<float> TimeChanged;
 
-    private int _counter = 0;
-    private bool _isActive = false;  
+    private int _beginningReport = 0;
+    private bool _isActive = true;
 
     private void OnMouseDown()
     {
         if (_isActive)
+        {
             _isActive = false;
-        else _isActive = true;
-
-        StartCoroutine(CountDown());
+            StopCoroutine(CountDown());
+        }
+        else
+        {
+            _isActive = true;
+            StartCoroutine(CountDown());
+        }          
     }
- 
+
     private IEnumerator CountDown(float delay = 0.5f)
     {
         var wait = new WaitForSeconds(delay);
 
         while (_isActive)
         {
-            _counter++;
-            DisplayCountdown(_counter);
+            _beginningReport++;
+            TimeChanged?.Invoke(_beginningReport);
             yield return wait;
         }    
-    }
-
-    private void DisplayCountdown(int count)
-    {
-        _text.text = count.ToString("");
     }
 }
